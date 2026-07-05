@@ -30,14 +30,27 @@ pip install -r /home/yourusername/notesapp/backend/requirements.txt
 
 ---
 
-### Step 3: Build the React Frontend
-In your Bash console, compile the React Vite application into production static assets:
-```bash
-cd /home/yourusername/notesapp/frontend
-npm install
+### Step 3: The Frontend UI (No `npm` Needed on PythonAnywhere!)
+**Best Practice / Recommended Option**:
+Because PythonAnywhere servers often don't have Node.js/npm installed by default, **you do NOT need to run `npm` on PythonAnywhere!**
+Instead, build the project **locally on your PC** before pushing to GitHub:
+```powershell
+# Run this on your local Windows PC terminal:
+cd C:\Users\admin\.gemini\antigravity\scratch\notesapp\frontend
 npm run build
+git add .
+git commit -m "Build production UI for PythonAnywhere"
+git push
 ```
-*(This builds your production UI directly into `/home/yourusername/notesapp/frontend/dist` where Django is automatically configured to read it).*
+When you clone or `git pull` on PythonAnywhere, the compiled `frontend/dist` folder will already be there! You can skip directly to Step 4!
+
+*(Optional Alternative: If you really want to install and run `npm` inside PythonAnywhere Bash, run these 3 commands first to install Node Version Manager:)*
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+source ~/.bashrc
+nvm install 20
+```
+
 
 ---
 
@@ -46,18 +59,23 @@ In your Bash console, migrate the database and collect all static assets:
 ```bash
 cd /home/yourusername/notesapp/backend
 
-# Create your .env file (Optional: by default it will gracefully use SQLite if no PostgreSQL credentials are provided)
+# 1. Create your production .env file from the example template
 cp .env.example .env
 
-# Run database migrations
+# 2. CRITICAL: Edit .env in PythonAnywhere's Files tab (or via nano) and ensure:
+#    DEBUG=False
+#    SECRET_KEY=your-secure-secret-key
+
+# 3. Run database migrations
 python manage.py migrate
 
-# Collect static files for production
+# 4. Collect static files for production
 python manage.py collectstatic --noinput
 
-# Create an Admin superuser account
+# 5. Create an Admin superuser account
 python manage.py createsuperuser
 ```
+
 
 ---
 

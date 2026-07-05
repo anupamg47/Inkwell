@@ -13,8 +13,10 @@ env/
 
 # Node / Vite / React
 node_modules/
-/frontend/dist/
+# Note: We include frontend/dist so PythonAnywhere doesn't require npm!
+# /frontend/dist/
 /frontend/.env
+
 *.local
 npm-debug.log*
 yarn-debug.log*
