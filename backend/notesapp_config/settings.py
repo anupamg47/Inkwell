@@ -63,17 +63,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'notesapp_config.wsgi.application'
 
-DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.postgresql')
+# Permanent SQLite Database Configuration
 DATABASES = {
     'default': {
-        'ENGINE': DB_ENGINE,
-        'NAME': os.getenv('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3') if 'sqlite' in DB_ENGINE else 'notesapp'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

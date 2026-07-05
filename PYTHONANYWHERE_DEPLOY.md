@@ -66,7 +66,7 @@ cp .env.example .env
 #    DEBUG=False
 #    SECRET_KEY=your-secure-secret-key
 
-# 3. Run database migrations
+# 3. Run database migrations (this automatically creates your db.sqlite3 database file!)
 python manage.py migrate
 
 # 4. Collect static files for production
@@ -75,7 +75,7 @@ python manage.py collectstatic --noinput
 # 5. Create an Admin superuser account
 python manage.py createsuperuser
 ```
-
+*(This project is permanently configured to use SQLite, so zero database configuration or PostgreSQL setup is required!)*
 
 ---
 
