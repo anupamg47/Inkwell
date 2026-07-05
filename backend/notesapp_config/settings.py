@@ -15,9 +15,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-notes-app-secret-key-chang
 # DEBUG: Must be False in production (PythonAnywhere), True for local dev
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
-# ALLOWED_HOSTS: Required when DEBUG=False. Accepts all hosts or custom .env list.
-allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '*')
-ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',')] if allowed_hosts_env != '*' else ['*', '.pythonanywhere.com', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS: Always authorize all pythonanywhere.com subdomains and local/wildcard hosts!
+ALLOWED_HOSTS = ['*', '.pythonanywhere.com', 'localhost', '127.0.0.1']
+
 
 
 INSTALLED_APPS = [
