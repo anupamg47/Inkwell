@@ -17,9 +17,9 @@ Whenever you push new changes to GitHub, do the following on PythonAnywhere:
 ### Step 2: Run the Automated Update Script
 Copy and paste this single command into your Bash Console and press **Enter**:
 ```bash
-cd ~/notesapp && bash pythonanywhere_update.sh
+cd ~/Inkwell && bash pythonanywhere_update.sh
 ```
-*This script will automatically pull your latest code from GitHub, rebuild the React frontend, run database migrations, and collect Django static files.*
+*(Note: If your folder on PythonAnywhere is named lowercase `~/inkwell`, type `cd ~/inkwell && bash pythonanywhere_update.sh` instead! Our script will automatically detect and update it.)*
 
 ### Step 3: Reload Your Web App
 1. Go to your **Web** tab in PythonAnywhere.
