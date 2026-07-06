@@ -77,7 +77,6 @@ export default function LockScreen({ onUnlocked }) {
 
         <div className="lock-screen-footer">
           <p>Inkwell Notes Suite &bull; Private Executive Edition</p>
-          {/* <span className="lock-hint">Default passkey: <strong>admin12345</strong> (or your Admin Password)</span> */}
         </div>
       </div>
     </div>

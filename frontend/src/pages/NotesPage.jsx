@@ -146,7 +146,7 @@ export default function NotesPage() {
 
   const effectiveFilter = searchQuery ? 'search' : activeFilter
 
-  if (!authStatus.loading && authStatus.is_protected && !authStatus.is_unlocked) {
+  if (authStatus.loading || (authStatus.is_protected && !authStatus.is_unlocked)) {
     return (
       <LockScreen
         onUnlocked={() => {
