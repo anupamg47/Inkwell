@@ -12,11 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-notes-app-secret-key-change-in-production')
 
-# DEBUG: Must be False in production (PythonAnywhere), True for local dev
+# DEBUG: Must be False in production (Render.com), True for local dev
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
-# ALLOWED_HOSTS: Always authorize all pythonanywhere.com subdomains and local/wildcard hosts!
-ALLOWED_HOSTS = ['*', '.pythonanywhere.com', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS: Authorize Render.com subdomains and local/wildcard hosts
+ALLOWED_HOSTS = ['*', '.onrender.com', 'localhost', '127.0.0.1']
 
 
 
@@ -95,13 +95,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-# CORS & CSRF — allow PythonAnywhere, Render, and local dev
+# CORS & CSRF — allow Render.com and local dev
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.pythonanywhere.com',
-    'http://*.pythonanywhere.com',
     'https://*.onrender.com',
     'http://*.onrender.com',
     'http://localhost:5173',
