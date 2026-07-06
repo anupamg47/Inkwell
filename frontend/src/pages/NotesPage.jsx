@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import Sidebar from '../components/Sidebar'
 import NoteGrid from '../components/NoteGrid'
 import NoteEditor from '../components/NoteEditor'
-import { fetchNotes, fetchCategories, fetchNoteStats, deleteNote } from '../services/api'
+import LockScreen from '../components/LockScreen'
+import { fetchNotes, fetchCategories, fetchNoteStats, deleteNote, fetchAuthStatus, logoutSite } from '../services/api'
 
 export default function NotesPage() {
   const [notes, setNotes] = useState([])
@@ -16,6 +17,7 @@ export default function NotesPage() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [toasts, setToasts] = useState([])
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [authStatus, setAuthStatus] = useState({ is_protected: true, is_unlocked: false, loading: true })
   const searchTimer = useRef(null)
 
   // -- Toast --
@@ -66,18 +68,32 @@ export default function NotesPage() {
     }
   }
 
+  const checkAuth = async () => {
+    try {
+      const status = await fetchAuthStatus()
+      setAuthStatus({ ...status, loading: false })
+      if (status.is_unlocked) {
+        loadCategories()
+        loadStats()
+      }
+    } catch (e) {
+      console.error('Failed to check auth status:', e)
+      setAuthStatus({ is_protected: true, is_unlocked: false, loading: false })
+    }
+  }
+
   useEffect(() => {
-    loadCategories()
-    loadStats()
+    checkAuth()
   }, [])
 
   useEffect(() => {
+    if (!authStatus.is_unlocked) return
     clearTimeout(searchTimer.current)
     searchTimer.current = setTimeout(() => {
       loadNotes(searchQuery)
     }, 300)
     return () => clearTimeout(searchTimer.current)
-  }, [searchQuery, activeFilter, loadNotes])
+  }, [searchQuery, activeFilter, loadNotes, authStatus.is_unlocked])
 
   // -- Editor --
   const openNew = () => { setEditorNote(null); setIsEditorOpen(true) }
@@ -130,6 +146,19 @@ export default function NotesPage() {
 
   const effectiveFilter = searchQuery ? 'search' : activeFilter
 
+  if (!authStatus.loading && authStatus.is_protected && !authStatus.is_unlocked) {
+    return (
+      <LockScreen
+        onUnlocked={() => {
+          setAuthStatus(s => ({ ...s, is_unlocked: true }))
+          loadCategories()
+          loadStats()
+          loadNotes()
+        }}
+      />
+    )
+  }
+
   return (
     <div className="app-layout">
       <Sidebar
@@ -173,6 +202,24 @@ export default function NotesPage() {
             </div>
           </div>
           <div className="header-actions">
+            {authStatus.is_protected && (
+              <button
+                id="header-lock-btn"
+                type="button"
+                className="btn-cancel"
+                style={{ width: 'auto', padding: '7px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                onClick={async () => {
+                  try {
+                    await logoutSite()
+                  } catch (e) {}
+                  setAuthStatus(s => ({ ...s, is_unlocked: false }))
+                  addToast('Desk locked securely')
+                }}
+                title="Lock Confidential Desk"
+              >
+                🔒 Lock Desk
+              </button>
+            )}
             <button
               id="header-new-note-btn"
               type="button"

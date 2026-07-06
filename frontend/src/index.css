@@ -1211,6 +1211,135 @@ p, li {
 .btn-danger:hover { opacity: 0.88; }
 
 /* ============================================================
+   CONFIDENTIAL DESK LEDGER LOCK SCREEN
+   ============================================================ */
+.lock-screen-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #1b1f24 0%, #101215 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 999;
+}
+
+.lock-screen-card {
+  background: var(--paper-ivory);
+  border: 1px solid rgba(200, 169, 106, 0.4);
+  border-radius: var(--radius-md);
+  padding: 36px 32px 28px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  animation: modalIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.lock-screen-emblem {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #2c3238 0%, #1e2226 100%);
+  border: 1.5px solid var(--gold-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.lock-icon { font-size: 1.6rem; }
+
+.lock-screen-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--ink-900);
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.lock-screen-subtitle {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--ink-600);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.lock-screen-form {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.lock-field label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-700);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.lock-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink-900);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  outline: none;
+  transition: all var(--transition-fast);
+  margin-bottom: 16px;
+}
+
+.lock-input:focus {
+  border-color: var(--gold-dim);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(200, 169, 106, 0.25);
+}
+
+.lock-error {
+  padding: 10px 14px;
+  background: #fee2e2;
+  border: 1px solid #f87171;
+  border-radius: var(--radius-sm);
+  color: #b91c1c;
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.lock-submit-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 12px 20px;
+  font-size: 1rem;
+}
+
+.lock-screen-footer {
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding-top: 16px;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--ink-500);
+}
+
+.lock-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--ink-600);
+}
+
+/* ============================================================
    RESPONSIVE & MOBILE PHONE OPTIMIZATIONS
    ============================================================ */
 

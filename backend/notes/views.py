@@ -1,23 +1,80 @@
+import os
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.response import Response
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from .models import Note, Category
 from .serializers import NoteSerializer, CategorySerializer
 
 
+class IsAuthenticatedOrSiteUnlocked(BasePermission):
+    """
+    Allows access if user is logged in via Django auth or session flag,
+    OR if SITE_PASSWORD is set to empty string / 'false' / 'none'.
+    """
+    def has_permission(self, request, view):
+        site_pwd = os.getenv('SITE_PASSWORD', 'admin12345').strip()
+        if site_pwd.lower() in ('', 'false', 'none', 'disabled', '0'):
+            return True
+        if request.user and request.user.is_authenticated:
+            return True
+        if request.session.get('site_unlocked', False):
+            return True
+        return False
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def site_login(request):
+    password = request.data.get('password', '').strip()
+    username = request.data.get('username', 'admin').strip()
+    
+    site_pwd = os.getenv('SITE_PASSWORD', 'admin12345').strip()
+    
+    # Check against SITE_PASSWORD or Django superuser password
+    if password == site_pwd:
+        request.session['site_unlocked'] = True
+        return Response({'success': True, 'message': 'Desk ledger unlocked!'})
+    
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        request.session['site_unlocked'] = True
+        return Response({'success': True, 'message': 'Welcome back, Executive!'})
+        
+    return Response({'success': False, 'message': 'Invalid password. Access denied.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def site_logout(request):
+    logout(request)
+    request.session['site_unlocked'] = False
+    return Response({'success': True, 'message': 'Desk locked securely.'})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def site_status(request):
+    site_pwd = os.getenv('SITE_PASSWORD', 'admin12345').strip()
+    is_protected = site_pwd.lower() not in ('', 'false', 'none', 'disabled', '0')
+    is_unlocked = not is_protected or (request.user and request.user.is_authenticated) or request.session.get('site_unlocked', False)
+    return Response({
+        'is_protected': is_protected,
+        'is_unlocked': is_unlocked,
+        'username': request.user.username if (request.user and request.user.is_authenticated) else 'Executive'
+    })
+
+
 class CategoryViewSet(viewsets.ModelViewSet):
     """
-    CRUD ViewSet for Categories.
-    Endpoints:
-      GET    /api/categories/         - list all categories
-      POST   /api/categories/         - create category
-      GET    /api/categories/{id}/    - retrieve category
-      PUT    /api/categories/{id}/    - update category
-      DELETE /api/categories/{id}/    - delete category
+    CRUD ViewSet for Categories (Protected by Site Password).
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticatedOrSiteUnlocked]
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -29,16 +86,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class NoteViewSet(viewsets.ModelViewSet):
     """
-    CRUD ViewSet for Notes.
-    Endpoints:
-      GET    /api/notes/              - list all notes (supports ?search=, ?category=)
-      POST   /api/notes/             - create note
-      GET    /api/notes/{id}/        - retrieve note
-      PUT    /api/notes/{id}/        - update note
-      PATCH  /api/notes/{id}/        - partial update (e.g., toggle pin)
-      DELETE /api/notes/{id}/        - delete note
+    CRUD ViewSet for Notes (Protected by Site Password).
     """
     serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticatedOrSiteUnlocked]
 
     def get_queryset(self):
         queryset = Note.objects.select_related('category').all()
@@ -85,4 +136,3 @@ class NoteViewSet(viewsets.ModelViewSet):
             'pinned_count': pinned_count,
             'uncategorized_count': uncategorized_count,
         })
-
