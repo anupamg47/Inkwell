@@ -1,12 +1,22 @@
 import os
 from rest_framework import viewsets, status
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, BasePermission
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from .models import Note, Category
 from .serializers import NoteSerializer, CategorySerializer
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    Session authentication without CSRF enforcement for REST API endpoints
+    that are protected by our custom desk ledger passkey / session flag.
+    """
+    def enforce_csrf(self, request):
+        return  # Do not enforce CSRF check on API requests
 
 
 class IsAuthenticatedOrSiteUnlocked(BasePermission):
@@ -26,6 +36,7 @@ class IsAuthenticatedOrSiteUnlocked(BasePermission):
 
 
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
 @permission_classes([AllowAny])
 def site_login(request):
     password = request.data.get('password', '').strip()
@@ -48,6 +59,7 @@ def site_login(request):
 
 
 @api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
 @permission_classes([AllowAny])
 def site_logout(request):
     logout(request)
@@ -56,6 +68,7 @@ def site_logout(request):
 
 
 @api_view(['GET'])
+@authentication_classes([CsrfExemptSessionAuthentication, BasicAuthentication])
 @permission_classes([AllowAny])
 def site_status(request):
     site_pwd = os.getenv('SITE_PASSWORD', 'admin12345').strip()
@@ -74,6 +87,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticatedOrSiteUnlocked]
 
     def destroy(self, request, *args, **kwargs):
@@ -89,6 +103,7 @@ class NoteViewSet(viewsets.ModelViewSet):
     CRUD ViewSet for Notes (Protected by Site Password).
     """
     serializer_class = NoteSerializer
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticatedOrSiteUnlocked]
 
     def get_queryset(self):

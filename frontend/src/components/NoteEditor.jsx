@@ -61,6 +61,7 @@ export default function NoteEditor({ note, categories, onSave, onClose }) {
       onSave(saved, isEdit)
     } catch (err) {
       console.error(err)
+      alert('Failed to save note sheet: ' + (err.response?.data?.detail || err.message || 'Please check your connection and passkey.'))
     } finally {
       setSaving(false)
     }
