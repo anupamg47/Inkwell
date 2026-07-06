@@ -65,13 +65,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'notesapp_config.wsgi.application'
 
-# Permanent SQLite Database Configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Permanent Database Configuration
+# Uses DATABASE_URL environment variable if provided (e.g. Render Free Postgres / Neon / Supabase),
+# otherwise falls back to local SQLite database.
+if os.getenv('DATABASE_URL'):
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 
