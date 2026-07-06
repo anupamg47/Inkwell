@@ -8,15 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from .models import Note, Category
 from .serializers import NoteSerializer, CategorySerializer
-
-
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-    """
-    Session authentication without CSRF enforcement for REST API endpoints
-    that are protected by our custom desk ledger passkey / session flag.
-    """
-    def enforce_csrf(self, request):
-        return  # Do not enforce CSRF check on API requests
+from .authentication import CsrfExemptSessionAuthentication
 
 
 class IsAuthenticatedOrSiteUnlocked(BasePermission):
