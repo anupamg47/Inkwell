@@ -9,18 +9,18 @@ from django.http import HttpResponse
 from django.db.models import Q
 from .models import Note, Category
 from .serializers import NoteSerializer, CategorySerializer
+from django.views.decorators.csrf import csrf_exempt
 from .authentication import CsrfExemptSessionAuthentication
 
 
-@api_view(['GET'])
-@authentication_classes([])
-@permission_classes([AllowAny])
+@csrf_exempt
 def ping_health(request):
     """
     Ultra-lightweight 2-byte health check endpoint for Cron-job.org / Uptime monitors.
+    Accepts GET, HEAD, POST, OPTIONS without DRF overhead or method errors.
     Returns plain text 'ok' so it never triggers 'output too large' or memory limits.
     """
-    return HttpResponse('ok', content_type='text/plain')
+    return HttpResponse('ok', content_type='text/plain', status=200)
 
 
 class IsAuthenticatedOrSiteUnlocked(BasePermission):
