@@ -5,10 +5,22 @@ from rest_framework.permissions import AllowAny, BasePermission
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
 from django.db.models import Q
 from .models import Note, Category
 from .serializers import NoteSerializer, CategorySerializer
 from .authentication import CsrfExemptSessionAuthentication
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def ping_health(request):
+    """
+    Ultra-lightweight 2-byte health check endpoint for Cron-job.org / Uptime monitors.
+    Returns plain text 'ok' so it never triggers 'output too large' or memory limits.
+    """
+    return HttpResponse('ok', content_type='text/plain')
 
 
 class IsAuthenticatedOrSiteUnlocked(BasePermission):

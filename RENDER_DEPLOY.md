@@ -90,3 +90,21 @@ Under **Environment Variables**, click **Add Environment Variable** and add:
 
 ### Step 4: Click 'Create Web Service'!
 Render will now build and host your site completely for free! Because you added `DATABASE_URL`, your data is 100% permanent! 🎉🪶✨
+
+---
+
+## ⚡ Why Does the Site Sometimes Say "Rendering..." or Delay Loading? (Cold Starts)
+
+On **Render.com's Free Tier ($0/month)**, if your website receives **no web traffic for 15 minutes**, Render automatically puts your server to **sleep (spins down to zero instances)** to conserve server memory!
+
+When you (or anyone else) open your app after it has been asleep for 15+ minutes, Render has to **wake up your container and boot Python from scratch!** This wake-up process is called a **"Cold Start"** and takes roughly **30 to 50 seconds**. While waking up, you might see a brief loading pause or a message saying *"Spinning up service..."* or *"Rendering..."*. Once awake, your site runs lightning fast!
+
+### 🚀 How to Keep Your Site Awake 24/7 for Free (No Cold Starts!):
+You can easily prevent your site from sleeping by using a free uptime ping service:
+1. Go to a free monitor like **[Cron-job.org](https://cron-job.org/)** or **[UptimeRobot.com](https://uptimerobot.com/)** (no credit card required).
+2. Create a free account and click **Add New Monitor / Job**.
+3. Enter your lightweight ping URL: `https://your-app-name.onrender.com/api/ping/` *(This special endpoint returns a tiny 2-byte response `ok` so it will NEVER trigger 'Failed: output too large' or memory errors!)*
+4. Set the schedule / execution interval to **every 10 minutes** or **every 14 minutes**.
+5. *(Optional for Cron-job.org)* Under **Advanced settings**, uncheck **Save response body** (so it doesn't log history text).
+
+Because the monitoring service visits your lightweight `/api/ping/` endpoint every 10 to 14 minutes, **Render never sees 15 minutes of inactivity!** Your Inkwell Notes Suite will stay awake 24/7/365 and will load instantly every single time without any delay! ⚡🪶✨
